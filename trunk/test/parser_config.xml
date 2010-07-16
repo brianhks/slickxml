@@ -1,0 +1,98 @@
+
+<slickxml package="slickxml.test" destination="build/test/slickxml/test">
+	<parser name="TBXParser">
+		<object tag="termEntry" name="TermEntry">
+			<property name="Subject">
+				<element name="descrip">
+					<condition name="type" value="subjectField"/>
+				</element>
+			</property>
+			
+			<property name="Definition">
+				<element name="descrip">
+					<condition name="type" value="definition"/>
+				</element>
+			</property>
+			
+			<object tag="langSet" name="LanguageSet">
+				<property name="Language">
+					<attribute>xml:lang</attribute>
+				</property>
+				
+				<object tag="tig" name="TermGroup">
+					<property name="Term">
+						<element name="term"/>
+					</property>
+					
+					<property name="TermType">
+						<element name="termNote">
+							<condition name="type" value="termType"/>
+						</element>
+					</property>
+					
+					<property name="PartOfSpeech">
+						<element name="termNote">
+							<condition name="type" value="partOfSpeech"/>
+						</element>
+					</property>
+				</object>
+			</object>
+		</object>
+	</parser>
+	
+	<parser name="SlickXMLParser">
+		<object tag="slickxml" name="Header">
+			<property name="Package">
+				<attribute>package</attribute>
+			</property>
+			<property name="Destination">
+				<attribute>destination</attribute>
+			</property>
+		</object>
+		
+		<object tag="parser" name="Parser">
+			<property name="Name">
+				<attribute>name</attribute>
+			</property>
+				
+			<object tag="object" name="DataObject">
+				<property name="Tag">
+					<attribute>tag</attribute>
+				</property>
+				<property name="Name">
+					<attribute>name</attribute>
+				</property>
+				<property name="Reference">
+					<attribute>reference</attribute>
+				</property>
+				
+				<object tag="property" name="Property">
+					<property name="Name">
+						<attribute>name</attribute>
+					</property>
+					<property name="Attribute">
+						<element name="attribute"/>
+					</property>
+					
+					<object tag="element" name="Element">
+						<property name="Name">
+							<attribute>name</attribute>
+						</property>
+						
+						<object tag="condition" name="Condition">
+							<property name="Name">
+								<attribute>name</attribute>
+							</property>
+							<property name="Value">
+								<attribute>value</attribute>
+							</property>
+						</object>
+					</object>
+				</object>
+				
+				<object reference="DataObject"/>
+			</object>
+		</object>
+		
+	</parser>
+</slickxml>
