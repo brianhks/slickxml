@@ -2,6 +2,8 @@
 
 = Configuration File =
 
-First have a look at the sample configuration file found in the project.
+First have a look at the [http://code.google.com/p/slickxml/source/browse/trunk/test/parser_config.xml sample] configuration file found in the project.
 
 Also have a look at [http://slickxml.googlecode.com/svn/wiki/img/config_xml_map.png this] mapping of a configuration file to the xml that it will parser.
+
+More to come...
