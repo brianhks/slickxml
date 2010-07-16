@@ -1,0 +1,9 @@
+#summary How to run SlickXML
+
+First you need a configuration file there is a sample on in the source.
+
+Then you run:
+
+java -jar slickxml.jar your_config.xml
+
+Thats it.
