@@ -1,0 +1,7 @@
+#summary How to write a config file
+
+= Configuration File =
+
+First have a look at the sample configuration file found in the project.
+
+Also have a look at this mapping of a configuration file to the xml that it will parser.
