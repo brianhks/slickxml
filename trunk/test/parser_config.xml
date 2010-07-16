@@ -1,11 +1,15 @@
 
-<!-- SlickXML will create a java file for each of the parser elements -->
+<!-- SlickXML will create a java file for each of the parser elements 
+package: tells what package to put in the java file
+destination: tells where to write the java files 
+-->
 <slickxml package="slickxml.test" destination="build/test/slickxml/test">
 	<!-- This first parser is for parsing TBX (dictionary) files 
 	SlickXML will create a callback for each object directly under parser
 	this class only has one object that it returns -->
 	<parser name="TBXParser">
-		<!-- We are looking for a tag named termEntry -->
+		<!-- We are looking for a tag named termEntry 
+		Each <object> tag becomes an inner class defined within the parser -->
 		<object tag="termEntry" name="TermEntry">
 		
 			<!-- The property tag is used to define a property on the returned 
@@ -25,6 +29,9 @@
 				</element>
 			</property>
 			
+			<!-- Sub objects like LanguageSet are returned as lists from parent
+			objects.  For example to get the list of LanguageSet objects from a 
+			TermEntry object you call TermEntry.getLanguageSetList() -->
 			<object tag="langSet" name="LanguageSet">
 				<!-- This property is defined as the value of the attribute 'xml:lang'
 				that is located on the object tag (langSet) -->
