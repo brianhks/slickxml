@@ -1,9 +1,20 @@
 
+<!-- SlickXML will create a java file for each of the parser elements -->
 <slickxml package="slickxml.test" destination="build/test/slickxml/test">
+	<!-- This first parser is for parsing TBX (dictionary) files 
+	SlickXML will create a callback for each object directly under parser
+	this class only has one object that it returns -->
 	<parser name="TBXParser">
+		<!-- We are looking for a tag named termEntry -->
 		<object tag="termEntry" name="TermEntry">
+		
+			<!-- The property tag is used to define a property on the returned 
+			object.  In this case we are defining the Subject property and it 
+			is found as the contents of the element descrip -->
 			<property name="Subject">
 				<element name="descrip">
+					<!-- The condition element tells the parser to only get the contents
+					if there is an attrubte type="subjectField" on the element -->
 					<condition name="type" value="subjectField"/>
 				</element>
 			</property>
@@ -15,6 +26,8 @@
 			</property>
 			
 			<object tag="langSet" name="LanguageSet">
+				<!-- This property is defined as the value of the attribute 'xml:lang'
+				that is located on the object tag (langSet) -->
 				<property name="Language">
 					<attribute>xml:lang</attribute>
 				</property>
@@ -40,6 +53,8 @@
 		</object>
 	</parser>
 	
+	
+	<!-- This defines a parser to parse the SlickXML configuration files -->
 	<parser name="SlickXMLParser">
 		<object tag="slickxml" name="Header">
 			<property name="Package">
@@ -90,6 +105,8 @@
 					</object>
 				</object>
 				
+				<!-- This tells the parser that the tag 'object' can occure 
+				recursively -->
 				<object reference="DataObject"/>
 			</object>
 		</object>
