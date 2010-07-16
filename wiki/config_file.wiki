@@ -4,4 +4,4 @@
 
 First have a look at the sample configuration file found in the project.
 
-Also have a look at this mapping of a configuration file to the xml that it will parser.
+Also have a look at [http://code.google.com/p/slickxml/wiki/config_xml_map.png this] mapping of a configuration file to the xml that it will parser.
