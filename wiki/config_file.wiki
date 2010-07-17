@@ -187,3 +187,33 @@ You can define an inner object just as you did the object above but, you place i
 In this case `Book` now contains a member list for `AuthorAddress` objects and getter methods just like the ones for element properties.
 
 == Recursive Object ==
+Now lets get crazy with the xml.  What if the book element could contain within it another book element like this:
+{{{
+<books>
+  <book name="Lord of the Rings" author="JRR Tolken">
+    <book name="The Two Towers" author="JRR Tolken"/>
+    <book name="Return of the King" author="JRR Tolken"/>
+  </book>
+  ...
+</books>
+}}}
+Basically we want the parser to look for recursive objects and here is how we do it.
+{{{
+<slickxml package="bookprocessor.parsers" destination="src/java/bookprocessor/parsers">
+  <parser name="BookParser">
+    <object name="Book" tag="book">
+      <property name="Name">
+        <attribute>name</attribute>
+      </property>
+      <property name="Author">
+        <attribute>author</attribute>
+      </property>
+
+      <object reference="Book"/>
+
+    </object>
+  </parser>
+</slickxml>
+}}}
+
+Now the `Book` class contains getters for a list of `Book` objects.
