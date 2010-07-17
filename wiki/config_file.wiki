@@ -4,6 +4,70 @@
 
 First have a look at the [http://code.google.com/p/slickxml/source/browse/trunk/test/parser_config.xml sample] configuration file found in the project.
 
-Also have a look at [http://slickxml.googlecode.com/svn/wiki/img/config_xml_map.png this] mapping of a configuration file to the xml that it will parser.
+Also have a look at this mapping of a configuration file to the xml that it will parser.
+
+[http://slickxml.googlecode.com/svn/wiki/img/config_xml_map.png] 
+
+
+== Simple Example ==
+
+Lets say we want to parse the following simple xml document
+{{{
+<books>
+  <book name="Lord of the Rings" author="JRR Tolken"/>
+  <book name="Fahrenheit 451" author="Ray Bradbury"/>
+  <book name="Facing Codependence" author="Pia Mellody"/>
+</books>
+}}}
+
+That is a great set of books!  Now lets parse it, or better yet lets create a config file so SlickXML can create a parser for us.  What I would like is for the parser to hand back each book as an object to my code so I can place the book in a database.
+
+First lets start with the basic outline of the config file.  This defines the package name to use and where to place the java file.
+{{{
+<slickxml package="bookprocessor.parsers" destination="src/java/bookprocessor/parsers">
+  ...
+</slickxml>
+}}}
+
+Now I want to add a parser for my books.  The class name for the parser will be "BookParser"
+{{{
+<slickxml package="bookprocessor.parsers" destination="src/java/bookprocessor/parsers">
+  <parser name="BookParser">
+  </parser>
+</slickxml>
+}}}
+
+Now I will define the object to be returned to me.
+{{{
+<slickxml package="bookprocessor.parsers" destination="src/java/bookprocessor/parsers">
+  <parser name="BookParser">
+
+    <object name="Book" tag="book">
+    </object>
+
+  </parser>
+</slickxml>
+}}}
+The object it will return is Book or more precisely it will be an instance of BookParser.Book.  Notice I didn't have to specify the root element.  The parser basically goes through the file ignoring everything until it hits an element that matches one of its root objects, in this case "book"
+
+Now to define two properties on the object to contain each of the attributes
+{{{
+<slickxml package="bookprocessor.parsers" destination="src/java/bookprocessor/parsers">
+  <parser name="BookParser">
+    <object name="Book" tag="book">
+
+      <property name="Name">
+        <attribute>name</attribute>
+      </property>
+      <property name="Author">
+        <attribute>author</attribute>
+      </property>
+
+    </object>
+  </parser>
+</slickxml>
+}}}
+The "property" elements tell the parser to add a member variables to the Book class.  The value for the two member variables will come from the specified attributes that are on the "book" element in the xml.  Now because this object only defines properties that are attributes of the start tag, the object will be returned immediately after the start element has been processed.  In this case it isn't a big deal because the book elements don't contain a body but, if they did it would make a difference.
+
 
 More to come...
