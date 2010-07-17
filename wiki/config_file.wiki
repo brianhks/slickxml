@@ -29,6 +29,7 @@ First lets start with the basic outline of the config file.  This defines the pa
 </slickxml>
 }}}
 
+=== Parser ===
 Now I want to add a parser for my books.  The class name for the parser will be `BookParser`
 {{{
 <slickxml package="bookprocessor.parsers" destination="src/java/bookprocessor/parsers">
@@ -37,6 +38,7 @@ Now I want to add a parser for my books.  The class name for the parser will be 
 </slickxml>
 }}}
 
+=== Object ===
 Now I will define the object to be returned to me.
 {{{
 <slickxml package="bookprocessor.parsers" destination="src/java/bookprocessor/parsers">
@@ -50,6 +52,7 @@ Now I will define the object to be returned to me.
 }}}
 The object it will return is Book or more precisely it will be an instance of `BookParser.Book`.  Notice I didn't have to specify the root element.  The parser basically goes through the file ignoring everything until it hits an element that matches one of its root objects, in this case `book`
 
+=== Property ===
 Now to define two properties on the object to contain each of the attributes
 {{{
 <slickxml package="bookprocessor.parsers" destination="src/java/bookprocessor/parsers">
@@ -70,4 +73,87 @@ Now to define two properties on the object to contain each of the attributes
 The "property" elements tell the parser to add a member variables to the `Book` class.  The value for the two member variables will come from the specified attributes that are on the `book` element in the xml.  Now because this object only defines properties that are attributes of the start tag, the object will be returned immediately after the start element has been processed.  In this case it isn't a big deal because the book elements don't contain a body but, if they did it would make a difference.
 
 
-More to come...
+== Example 2 ==
+=== Element ===
+Now lets make that XML a little more complicated and introduce a new concept
+{{{
+<books>
+  <book name="Lord of the Rings" author="JRR Tolken">
+    <isbn>123456</isbn>
+  </book>
+  <book name="Fahrenheit 451" author="Ray Bradbury">
+    <isbn>123454</isbn>
+  </book>
+  <book name="Facing Codependence" author="Pia Mellody">
+    <isbn>123452</isbn>
+  </book>
+</books>
+}}}
+
+Now there is a child element that we want to get the value of.  Again we use the `property` tag but define the content as an `element`:
+{{{
+<slickxml package="bookprocessor.parsers" destination="src/java/bookprocessor/parsers">
+  <parser name="BookParser">
+    <object name="Book" tag="book">
+      <property name="Name">
+        <attribute>name</attribute>
+      </property>
+      <property name="Author">
+        <attribute>author</attribute>
+      </property>
+
+      <property name="ISBN">
+        <element name="isbn"/>
+      </property>
+
+    </object>
+  </parser>
+</slickxml>
+}}}
+Now as if the parser hits any child element of `book` that equals `isbn` it will be added as a property to the `Book` class.  Because elements can occur more then once, properties that are defined using the `element` tag can be retrieved one of two ways from the returned object.  In our case the `Book` object will have to get methods for `ISBN`: `Book.getISBN()` and `Book.getISBNList()`.  The first is a convenience method that returns the first ISBN in the list, where as the second returns the entire list.
+
+=== Condition ===
+There is one more concept with the `property` element and that is conditions.  A condition is used inside an `element` so that a check for a certain attribute before grabbing the text of the element.  To explain this I'll change up the XML a bit:
+{{{
+<books>
+  <book name="Lord of the Rings" author="JRR Tolken">
+    <isbn type="old">123456</isbn>
+    <isbn type="new">123456-123</isbn>
+  </book>
+  ...
+</books>
+}}}
+Now there are two different isbn numbers and the difference is specified in the attribute `type`.  I can separate those into two different properties with the following configuration change:
+{{{
+<slickxml package="bookprocessor.parsers" destination="src/java/bookprocessor/parsers">
+  <parser name="BookParser">
+    <object name="Book" tag="book">
+      <property name="Name">
+        <attribute>name</attribute>
+      </property>
+      <property name="Author">
+        <attribute>author</attribute>
+      </property>
+
+      <property name="ISBNOld">
+        <element name="isbn">
+          <condition name="type" value="old"/>
+        </element>
+      </property>
+      <property name="ISBNNew">
+        <element name="isbn">
+          <condition name="type" value="new"/>
+        </element>
+      </property>
+
+    </object>
+  </parser>
+</slickxml>
+}}}
+I can add as many conditions as I want and they will be AND'd to gether in the code.
+
+== Inner Object ==
+You can define an inner object just as you did the object above but, you place it within another object definition.
+
+
+== Recursive Object ==
