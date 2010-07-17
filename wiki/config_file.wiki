@@ -29,7 +29,7 @@ First lets start with the basic outline of the config file.  This defines the pa
 </slickxml>
 }}}
 
-Now I want to add a parser for my books.  The class name for the parser will be "BookParser"
+Now I want to add a parser for my books.  The class name for the parser will be `BookParser`
 {{{
 <slickxml package="bookprocessor.parsers" destination="src/java/bookprocessor/parsers">
   <parser name="BookParser">
@@ -48,7 +48,7 @@ Now I will define the object to be returned to me.
   </parser>
 </slickxml>
 }}}
-The object it will return is Book or more precisely it will be an instance of BookParser.Book.  Notice I didn't have to specify the root element.  The parser basically goes through the file ignoring everything until it hits an element that matches one of its root objects, in this case "book"
+The object it will return is Book or more precisely it will be an instance of `BookParser.Book`.  Notice I didn't have to specify the root element.  The parser basically goes through the file ignoring everything until it hits an element that matches one of its root objects, in this case `book`
 
 Now to define two properties on the object to contain each of the attributes
 {{{
@@ -67,7 +67,7 @@ Now to define two properties on the object to contain each of the attributes
   </parser>
 </slickxml>
 }}}
-The "property" elements tell the parser to add a member variables to the Book class.  The value for the two member variables will come from the specified attributes that are on the "book" element in the xml.  Now because this object only defines properties that are attributes of the start tag, the object will be returned immediately after the start element has been processed.  In this case it isn't a big deal because the book elements don't contain a body but, if they did it would make a difference.
+The "property" elements tell the parser to add a member variables to the `Book` class.  The value for the two member variables will come from the specified attributes that are on the `book` element in the xml.  Now because this object only defines properties that are attributes of the start tag, the object will be returned immediately after the start element has been processed.  In this case it isn't a big deal because the book elements don't contain a body but, if they did it would make a difference.
 
 
 More to come...
