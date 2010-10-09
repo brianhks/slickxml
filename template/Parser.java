@@ -10,6 +10,8 @@ public class <obj.className>
 	
 	<obj.properties:{prop | private <if (prop.attribute)>String<else>StringBuilder<endif> m_<prop.varName>;
 }>
+	<obj.properties:{prop | <if (!prop.attribute)>private List\<String\> m_<prop.varName>List = new ArrayList\<String\>();<endif>
+}>
 	<obj.objects:{subobj | private List\<<subobj.className>\> m_<subobj.varName>List = new ArrayList\<<subobj.className>\>();
 private <subobj.className> m_<subobj.varName>;
 private int m_<subobj.varName>Ref = 0;
@@ -22,7 +24,12 @@ public String get<prop.name>() { return (m_<prop.varName>); }
 
 public String get<prop.name>()
 	{
-	return (m_<prop.varName> == null ? null : m_<prop.varName>.toString());
+	return (m_<prop.varName>List.size() == 0 ? null : m_<prop.varName>List.get(0));
+	}
+	
+public List\<String\> get<prop.name>List()
+	{
+	return (m_<prop.varName>List);
 	}
 
 <endif>
@@ -32,7 +39,7 @@ public String get<prop.name>()
 /**
 	Convenience function for getting a single value
 */
-public <subobj.className> getFirst<subobj.className>() 
+public <subobj.className> get<subobj.className>() 
 	{
 	if (m_<subobj.varName>List.size() == 0)
 		return (null);
@@ -98,6 +105,17 @@ if (localName.equals("<sobj.tag>"))
 	protected void endElement(String uri, String localName, String qName)
 			throws SAXException
 		{
+		<obj.properties:{prop |
+<if (!prop.attribute)>
+if (m_<prop.varName> != null)
+	{
+	m_<prop.varName>List.add(m_<prop.varName>.toString());
+	m_<prop.varName> = null;
+	}
+	
+<endif>
+}>
+
 		<obj.objects:{sobj |
 if ((localName.equals("<sobj.tag>")) && ((--m_<sobj.varName>Ref) == 0))
 	{
