@@ -10,5 +10,5 @@ YourSlickParser genHandler = new YourSlickParser(slickHandler);
 xmlParser.setContentHandler(genHandler);
 
 InputSource source = new InputSource(new FileInputStream(xmlFile));
-parser.parse(source);
+xmlParser.parse(source);
 }}}
