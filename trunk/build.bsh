@@ -11,7 +11,8 @@
  
 import cpmake.*;
 import cpmake.rules.*;
-import cpmake.java.*;
+import cpmake.addons.java.*;
+import cpmake.addons.ivy.IvyAddon;
 import org.apache.tools.ant.taskdefs.optional.junit.*;
 import org.apache.tools.ant.*;
 
@@ -20,26 +21,31 @@ classDir = "build/classes";
 jarDir = "build/jar";
 target = jarDir+"/slickxml.jar";
 
-classpath = new ClassPath(classDir);
+classpath = new Classpath(classDir);
 
-libs = new RegExFileSet("lib", ".*\\.jar").getFullFilePaths();
+ivyConfig = "*";
+ivy = new IvyAddon().setup();
+resolveRule = ivy.getResolveRule(ivyConfig);
 
-classpath.addPaths(libs);
+//libs = new RegExFileSet("lib", ".*\\.jar").getFullFilePaths();
+//classpath.addPaths(libs);
 
 
-compileRule = new JavaCompiler("compile", classDir)
+compileRule = new JavaCRule("compile", classDir)
 		.setDescription("Compile java files")
-		.setClasspath(classpath)
-		.addSourceDir("src");
+		.addClasspath(classpath)
+		.addSourceDir("src")
+		.addClasspathProvider(resolveRule.getClasspathProvider("runtime"))
+		.addDepend(resolveRule);
 
 	
 //-------------------------------------------------------------------
 //==-- RULE FOR CREATING JAR --==
-jarRule = new JarFile("jar", target).setDescription("Create jar file")
+jarRule = new JarRule("jar", target).setDescription("Create jar file")
 		.addDepend(compileRule)
 		.setManifest("manifest.txt")
 		.addDepend(new DirectoryRule(jarDir))
-		.addFiles("template/Parser.java")
+		.addFile("template/Parser.java")
 		.addFileSet(new RegExFileSet(classDir, ".*\\.class").recurse());
 		
 //-------------------------------------------------------------------
@@ -60,7 +66,15 @@ testRule = new SimpleRule("test").setMakeAction("doTest").setDescription("Run si
 void doTest(Rule rule)
 	{
 	classpath.addPath(".");
+	classpath.addPaths(resolveRule.getClasspath("runtime"));
 	make.exec("java -cp "+classpath+" slickxml.SlickParser test/parser_config.xml");
+	testSource = new RegExFileSet("build/test", ".*\\.java").recurse().getFullFilePaths();
+	print(testSource);
+	javacDef = make.getDefinition("sun_javac");
+	javacDef.set("sourcepath", "build/test");
+	javacDef.set("class_dir", "build/test");
+	javacDef.set("sourcefile", testSource);
+	make.exec(javacDef.getCommand());
 	}
 
 
