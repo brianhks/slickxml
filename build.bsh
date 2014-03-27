@@ -4,79 +4,70 @@
  * as this copyright notice appears in all source files.
  */
  
-/**
-	This script shows off some specialized rules for building java programs
-	namely the JavaCompiler rule and JarFile rule
-*/
- 
-import cpmake.*;
-import cpmake.rules.*;
-import cpmake.addons.java.*;
-import cpmake.addons.ivy.IvyAddon;
+import tablesaw.*;
+import tablesaw.rules.*;
+import tablesaw.addons.java.*;
+import tablesaw.addons.ivy.IvyAddon;
 import org.apache.tools.ant.taskdefs.optional.junit.*;
 import org.apache.tools.ant.*;
 
 print("===============================================");
-classDir = "build/classes";
-jarDir = "build/jar";
-target = jarDir+"/slickxml.jar";
 
-classpath = new Classpath(classDir);
 
-ivyConfig = "*";
+jp = new JavaProgram().setProgramName("slickxml")
+		.setSourceDirectory("src").setup();
+
+ivyConfig = "runtime";
 ivy = new IvyAddon().setup();
 resolveRule = ivy.getResolveRule(ivyConfig);
-
-//libs = new RegExFileSet("lib", ".*\\.jar").getFullFilePaths();
-//classpath.addPaths(libs);
-
-
-compileRule = new JavaCRule("compile", classDir)
-		.setDescription("Compile java files")
-		.addClasspath(classpath)
-		.addSourceDir("src")
-		.addClasspathProvider(resolveRule.getClasspathProvider("runtime"))
-		.addDepend(resolveRule);
-
-	
-//-------------------------------------------------------------------
-//==-- RULE FOR CREATING JAR --==
-jarRule = new JarRule("jar", target).setDescription("Create jar file")
-		.addDepend(compileRule)
-		.setManifest("manifest.txt")
-		.addDepend(new DirectoryRule(jarDir))
-		.addFile("template/Parser.java")
-		.addFileSet(new RegExFileSet(classDir, ".*\\.class").recurse());
 		
-//-------------------------------------------------------------------
-//==-- CREATE JAVADOCS --==
-new SimpleRule("javadoc").setMakeAction("doJavadoc").setDescription("Create javadocs");
-void doJavadoc(Rule rule)
-	{
-	def = make.getDefinition("sun_javadoc");
-	def.set("public").set("destination", "doc").set("source", compileRule.getSources());
-	make.exec(def.getCommand());
-	}
+jp.getCompileRule().addDepend(resolveRule);
+
+classpath = jp.getCompileRule().getClasspath();
+
+pomRule = ivy.createPomRule("build/jar/pom.xml")
+		.addDepend(jp.getJarRule())
+		.addLicense("LGPL", "http://www.gnu.org/licenses/lgpl.html", "repo");
 	
 //-------------------------------------------------------------------
 //==-- TEST --==
 testRule = new SimpleRule("test").setMakeAction("doTest").setDescription("Run simple test")
-		.addDepend(jarRule)
+		.addDepend(jp.getJarRule())
 		.alwaysRun();
 void doTest(Rule rule)
 	{
 	classpath.addPath(".");
 	classpath.addPaths(resolveRule.getClasspath("runtime"));
-	make.exec("java -cp "+classpath+" slickxml.SlickParser test/parser_config.xml");
+	saw.exec("java -cp "+classpath+" org.agileclick.slickxml.SlickParser test/parser_config.xml");
 	testSource = new RegExFileSet("build/test", ".*\\.java").recurse().getFullFilePaths();
 	print(testSource);
-	javacDef = make.getDefinition("sun_javac");
+	javacDef = saw.getDefinition("sun_javac");
 	javacDef.set("sourcepath", "build/test");
 	javacDef.set("class_dir", "build/test");
 	javacDef.set("sourcefile", testSource);
-	make.exec(javacDef.getCommand());
+	saw.exec(javacDef.getCommand());
 	}
+	
+mavenArtifactsRule = new SimpleRule("maven-artifacts").setDescription("Create maven artifacts for maven central")
+		.addSource(jp.getJarRule().getTarget())
+		.addSource(jp.getJavaDocJarRule().getTarget())
+		.addSource(jp.getSourceJarRule().getTarget())
+		.addSource("build/jar/pom.xml")
+		.setMakeAction("signArtifacts");
+		
+void signArtifacts(Rule rule)
+	{
+	for (source : rule.getSources())
+		{
+		cmd = "gpg -ab "+source;
+		saw.exec(cmd);
+		}
+	}
+	
+new JarRule("maven-bundle", "build/bundle.jar").setDescription("Create bundle for uploading to maven central")
+		.addDepend(mavenArtifactsRule)
+		.addFileSet(new RegExFileSet(saw.getProperty(JavaProgram.JAR_DIRECTORY_PROPERTY), ".*"));
+	
 
-
-make.setDefaultTarget("jar");	
-
+saw.setDefaultTarget("jar");	
+ 

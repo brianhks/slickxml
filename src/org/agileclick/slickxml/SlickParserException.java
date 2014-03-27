@@ -1,4 +1,4 @@
-package slickxml;
+package org.agileclick.slickxml;
 
 public class SlickParserException extends Exception
 	{

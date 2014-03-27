@@ -1,4 +1,4 @@
-package slickxml.data;
+package org.agileclick.slickxml.data;
 
 import java.util.Collection;
 
