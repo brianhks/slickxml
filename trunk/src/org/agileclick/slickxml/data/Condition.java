@@ -1,4 +1,4 @@
-package slickxml.data;
+package org.agileclick.slickxml.data;
 
 public class Condition
 	{

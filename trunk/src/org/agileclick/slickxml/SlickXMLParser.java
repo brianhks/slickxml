@@ -1,4 +1,4 @@
-package slickxml;
+package org.agileclick.slickxml;
 
 import java.util.*;
 import org.xml.sax.Attributes;

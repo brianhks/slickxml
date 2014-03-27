@@ -1,6 +1,6 @@
-package slickxml;
+package org.agileclick.slickxml;
 
-import slickxml.data.*;
+import org.agileclick.slickxml.data.*;
 
 /* import org.dom4j.io.SAXReader;
 import org.dom4j.*; */
@@ -11,7 +11,6 @@ import org.xml.sax.*;
 import java.io.*;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.regex.*;
@@ -208,7 +207,7 @@ public class SlickParser implements SlickXMLParser.SlickHandler
 	public void parsedParser(SlickXMLParser.Parser entry) throws Exception
 		{
 		Map<String, Object> attributes = new HashMap<String, Object>();
-		slickxml.data.Parser parser = new slickxml.data.Parser(entry.getName());
+		org.agileclick.slickxml.data.Parser parser = new org.agileclick.slickxml.data.Parser(entry.getName());
 		m_allObjects.clear();
 		
 		loadDataObject(parser, new ArrayList<SlickXMLParser.Property>(),
@@ -231,7 +230,7 @@ public class SlickParser implements SlickXMLParser.SlickHandler
 			attributes.put("configuration", "");
 		
 		m_baseClassTemplate.setAttributes(attributes);
-		
+
 		File destFile = new File(m_destination);
 		if (!destFile.exists())
 			destFile.mkdirs();
@@ -261,7 +260,7 @@ public class SlickParser implements SlickXMLParser.SlickHandler
 		XMLReader parser = XMLReaderFactory.createXMLReader();
 		SlickXMLParser handler = new SlickXMLParser(this);
 		parser.setContentHandler(handler);
-		
+
 		InputSource source = new InputSource(new FileInputStream(xmlFile));
 		parser.parse(source);
 		}
