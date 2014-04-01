@@ -18,7 +18,7 @@ jp = new JavaProgram().setProgramName("slickxml")
 		.setSourceDirectory("src").setup();
 
 ivyConfig = "runtime";
-ivy = new IvyAddon().setup();
+ivy = new IvyAddon().setSettingsFile("ivysettings.xml").setup();
 resolveRule = ivy.getResolveRule(ivyConfig);
 		
 jp.getCompileRule().addDepend(resolveRule);
@@ -27,7 +27,9 @@ classpath = jp.getCompileRule().getClasspath();
 
 pomRule = ivy.createPomRule("build/jar/pom.xml")
 		.addDepend(jp.getJarRule())
-		.addLicense("LGPL", "http://www.gnu.org/licenses/lgpl.html", "repo");
+		.addLicense("LGPL", "http://www.gnu.org/licenses/lgpl.html", "repo")
+		.addDeveloper("brianhks", "Brian", "brianhks1@gmail.com");
+		
 	
 //-------------------------------------------------------------------
 //==-- TEST --==
@@ -48,6 +50,9 @@ void doTest(Rule rule)
 	saw.exec(javacDef.getCommand());
 	}
 	
+	
+//------------------------------------------------------------------------------
+//==-- Maven Artifacts --==
 mavenArtifactsRule = new SimpleRule("maven-artifacts").setDescription("Create maven artifacts for maven central")
 		.addSource(jp.getJarRule().getTarget())
 		.addSource(jp.getJavaDocJarRule().getTarget())
