@@ -7,7 +7,7 @@
 import tablesaw.*;
 import tablesaw.rules.*;
 import tablesaw.addons.java.*;
-import tablesaw.addons.ivy.IvyAddon;
+import tablesaw.addons.ivy.*;
 import org.apache.tools.ant.taskdefs.optional.junit.*;
 import org.apache.tools.ant.*;
 
@@ -18,17 +18,23 @@ jp = new JavaProgram().setProgramName("slickxml")
 		.setSourceDirectory("src").setup();
 
 ivyConfig = "runtime";
-ivy = new IvyAddon().setSettingsFile("ivysettings.xml").setup();
+ivy = new IvyAddon().addSettingsFile("ivysettings.xml").setup();
 resolveRule = ivy.getResolveRule(ivyConfig);
 		
 jp.getCompileRule().addDepend(resolveRule);
 
 classpath = jp.getCompileRule().getClasspath();
 
-pomRule = ivy.createPomRule("build/jar/pom.xml")
+pomRule = ivy.createPomRule("build/jar/pom.xml", resolveRule)
 		.addDepend(jp.getJarRule())
 		.addLicense("LGPL", "http://www.gnu.org/licenses/lgpl.html", "repo")
 		.addDeveloper("brianhks", "Brian", "brianhks1+slickxml@gmail.com");
+		
+//-------------------------------------------------------------------
+//==-- SETUP JAR FILE --==		
+jp.getJarRule()
+		.setManifest("manifest.txt")
+		.addFiles(new RegExFileSet("template", ".*").getFullFilePaths());
 		
 	
 //-------------------------------------------------------------------
@@ -51,6 +57,29 @@ void doTest(Rule rule)
 	}
 	
 	
+//------------------------------------------------------------------------------
+//==-- Publish Artifacts --==
+version = saw.getProperty("tablesaw.java.program.version");
+if (version.contains("SNAPSHOT"))
+	defaultResolver = "local-m2-publish-snapshot";
+else
+	defaultResolver = "local-m2-publish";
+
+PublishRule publishRule = ivy.createPublishRule(saw.getProperty("ivy.publish_resolver", defaultResolver),
+			ivy.getResolveRule("runtime"))
+		.setName("publish")
+		.setDescription("Publish pom and jar to maven snapshot repo")
+		.publishMavenMetadata()
+		.setOverwrite(true);
+
+publishRule.addArtifact(pomRule.getTarget())
+		.setType("pom")
+		.setExt("pom")
+		.setIsMetadata();
+publishRule.addArtifact(jp.getJarRule().getTarget())
+		.setType("jar")
+		.setExt("jar");
+		
 //------------------------------------------------------------------------------
 //==-- Maven Artifacts --==
 mavenArtifactsRule = new SimpleRule("maven-artifacts").setDescription("Create maven artifacts for maven central")

@@ -147,7 +147,11 @@ import org.xml.sax.helpers.DefaultHandler;
 	
 	The following is the configuration used to create this file
 	
-<configuration>
+	\<pre\>
+	{@code
+	<configuration>
+}
+	\</pre\>
 */
 public class <parser.className> extends DefaultHandler
 	{
