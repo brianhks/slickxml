@@ -165,7 +165,7 @@ public class SlickParser implements SlickXMLParser.SlickHandler
 				myProperty.setAttrName(prop.getAttribute());
 			else
 				{
-				SlickXMLParser.Element elem = prop.getFirstElement();
+				SlickXMLParser.Element elem = prop.getElement();
 				if (elem == null)
 					throw new SlickParserException("Missing attribute or element for property "+prop.getName());
 					

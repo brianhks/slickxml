@@ -11,61 +11,65 @@ import org.xml.sax.helpers.DefaultHandler;
 	
 	The following is the configuration used to create this file
 	
-<parser name="SlickXMLParser">
-		<object tag="slickxml" name="Header">
-			<property name="Package">
-				<attribute>package</attribute>
-			</property>
-			<property name="Destination">
-				<attribute>destination</attribute>
-			</property>
-		</object>
-		
-		<object tag="parser" name="Parser">
-			<property name="Name">
-				<attribute>name</attribute>
-			</property>
-				
-			<object tag="object" name="DataObject">
-				<property name="Tag">
-					<attribute>tag</attribute>
+	<pre>
+	{@code
+	<parser name="SlickXMLParser">
+			<object tag="slickxml" name="Header">
+				<property name="Package">
+					<attribute>package</attribute>
 				</property>
+				<property name="Destination">
+					<attribute>destination</attribute>
+				</property>
+			</object>
+			
+			<object tag="parser" name="Parser">
 				<property name="Name">
 					<attribute>name</attribute>
 				</property>
-				<property name="Reference">
-					<attribute>reference</attribute>
-				</property>
-				
-				<object tag="property" name="Property">
+					
+				<object tag="object" name="DataObject">
+					<property name="Tag">
+						<attribute>tag</attribute>
+					</property>
 					<property name="Name">
 						<attribute>name</attribute>
 					</property>
-					<property name="Attribute">
-						<element name="attribute"/>
+					<property name="Reference">
+						<attribute>reference</attribute>
 					</property>
 					
-					<object tag="element" name="Element">
+					<object tag="property" name="Property">
 						<property name="Name">
 							<attribute>name</attribute>
 						</property>
+						<property name="Attribute">
+							<element name="attribute"/>
+						</property>
 						
-						<object tag="condition" name="Condition">
+						<object tag="element" name="Element">
 							<property name="Name">
 								<attribute>name</attribute>
 							</property>
-							<property name="Value">
-								<attribute>value</attribute>
-							</property>
+							
+							<object tag="condition" name="Condition">
+								<property name="Name">
+									<attribute>name</attribute>
+								</property>
+								<property name="Value">
+									<attribute>value</attribute>
+								</property>
+							</object>
 						</object>
 					</object>
+					
+					<object reference="DataObject"/>
 				</object>
-				
-				<object reference="DataObject"/>
 			</object>
-		</object>
-		
-	</parser>
+			
+		</parser>
+}
+	</pre>
 */
 public class SlickXMLParser extends DefaultHandler
 	{
@@ -103,176 +107,6 @@ public class SlickXMLParser extends DefaultHandler
 		
 
 	//========================================================================
-	public class Property
-		{
-		private boolean _firstCall = true;
-		
-		private String m_Name;
-		private StringBuilder m_Attribute;
-
-		private List<Element> m_ElementList = new ArrayList<Element>();
-		private Element m_Element;
-		private int m_ElementRef = 0;
-
-		public String getName() { return (m_Name); }
-
-		public String getAttribute()
-			{
-			return (m_Attribute == null ? null : m_Attribute.toString());
-			}
-
-
-		public List<Element> getElementList() { return (m_ElementList); }
-		/**
-			Convenience function for getting a single value
-		*/
-		public Element getFirstElement() 
-			{
-			if (m_ElementList.size() == 0)
-				return (null);
-			else
-				return (m_ElementList.get(0));
-			}
-			
-
-
-		//------------------------------------------------------------------------
-		protected void startElement(String uri, String localName, String qName, Attributes attrs)
-			{
-			if (_firstCall)
-				{
-				m_Name = attrs.getValue("name");
-
-				_firstCall = false;
-				return;
-				}
-				
-			if (m_Element != null) 
-				{
-				if (localName.equals("element"))
-					m_ElementRef ++;
-					
-				m_Element.startElement(uri, localName, qName, attrs);
-				return;
-				}
-				
-
-
-			if (localName.equals("attribute") )
-				{
-				m_Attribute = new StringBuilder();
-				_characterGrabber = m_Attribute;
-				}
-
-				
-			if (localName.equals("element"))
-				{
-				m_Element = new Element();
-				m_ElementList.add(m_Element);
-				m_ElementRef = 1;
-				
-				m_Element.startElement(uri, localName, qName, attrs);
-				}
-
-
-			}
-
-		//------------------------------------------------------------------------
-		protected void endElement(String uri, String localName, String qName)
-				throws SAXException
-			{
-			if ((localName.equals("element")) && ((--m_ElementRef) == 0))
-				{
-				m_Element = null;
-				}
-					
-			if (m_Element != null)
-				m_Element.endElement(uri, localName, qName);
-
-
-			}
-		}
-
-	//========================================================================
-	public class Parser
-		{
-		private boolean _firstCall = true;
-		
-		private String m_Name;
-
-		private List<DataObject> m_DataObjectList = new ArrayList<DataObject>();
-		private DataObject m_DataObject;
-		private int m_DataObjectRef = 0;
-
-		public String getName() { return (m_Name); }
-
-
-		public List<DataObject> getDataObjectList() { return (m_DataObjectList); }
-		/**
-			Convenience function for getting a single value
-		*/
-		public DataObject getFirstDataObject() 
-			{
-			if (m_DataObjectList.size() == 0)
-				return (null);
-			else
-				return (m_DataObjectList.get(0));
-			}
-			
-
-
-		//------------------------------------------------------------------------
-		protected void startElement(String uri, String localName, String qName, Attributes attrs)
-			{
-			if (_firstCall)
-				{
-				m_Name = attrs.getValue("name");
-
-				_firstCall = false;
-				return;
-				}
-				
-			if (m_DataObject != null) 
-				{
-				if (localName.equals("object"))
-					m_DataObjectRef ++;
-					
-				m_DataObject.startElement(uri, localName, qName, attrs);
-				return;
-				}
-				
-
-
-				
-			if (localName.equals("object"))
-				{
-				m_DataObject = new DataObject();
-				m_DataObjectList.add(m_DataObject);
-				m_DataObjectRef = 1;
-				
-				m_DataObject.startElement(uri, localName, qName, attrs);
-				}
-
-
-			}
-
-		//------------------------------------------------------------------------
-		protected void endElement(String uri, String localName, String qName)
-				throws SAXException
-			{
-			if ((localName.equals("object")) && ((--m_DataObjectRef) == 0))
-				{
-				m_DataObject = null;
-				}
-					
-			if (m_DataObject != null)
-				m_DataObject.endElement(uri, localName, qName);
-
-
-			}
-		}
-
-	//========================================================================
 	public class Condition
 		{
 		private boolean _firstCall = true;
@@ -305,6 +139,7 @@ public class SlickXMLParser extends DefaultHandler
 		protected void endElement(String uri, String localName, String qName)
 				throws SAXException
 			{
+
 			}
 		}
 
@@ -332,8 +167,9 @@ public class SlickXMLParser extends DefaultHandler
 		public List<Property> getPropertyList() { return (m_PropertyList); }
 		/**
 			Convenience function for getting a single value
+			@return Property
 		*/
-		public Property getFirstProperty() 
+		public Property getProperty() 
 			{
 			if (m_PropertyList.size() == 0)
 				return (null);
@@ -344,8 +180,9 @@ public class SlickXMLParser extends DefaultHandler
 		public List<DataObject> getDataObjectList() { return (m_DataObjectList); }
 		/**
 			Convenience function for getting a single value
+			@return DataObject
 		*/
-		public DataObject getFirstDataObject() 
+		public DataObject getDataObject() 
 			{
 			if (m_DataObjectList.size() == 0)
 				return (null);
@@ -414,6 +251,7 @@ public class SlickXMLParser extends DefaultHandler
 		protected void endElement(String uri, String localName, String qName)
 				throws SAXException
 			{
+
 			if ((localName.equals("property")) && ((--m_PropertyRef) == 0))
 				{
 				m_Property = null;
@@ -435,6 +273,43 @@ public class SlickXMLParser extends DefaultHandler
 		}
 
 	//========================================================================
+	public class Header
+		{
+		private boolean _firstCall = true;
+		
+		private String m_Package;
+		private String m_Destination;
+
+		public String getPackage() { return (m_Package); }
+		public String getDestination() { return (m_Destination); }
+
+
+
+		//------------------------------------------------------------------------
+		protected void startElement(String uri, String localName, String qName, Attributes attrs)
+			{
+			if (_firstCall)
+				{
+				m_Package = attrs.getValue("package");
+				m_Destination = attrs.getValue("destination");
+
+				_firstCall = false;
+				return;
+				}
+				
+
+				
+			}
+
+		//------------------------------------------------------------------------
+		protected void endElement(String uri, String localName, String qName)
+				throws SAXException
+			{
+
+			}
+		}
+
+	//========================================================================
 	public class Element
 		{
 		private boolean _firstCall = true;
@@ -451,8 +326,9 @@ public class SlickXMLParser extends DefaultHandler
 		public List<Condition> getConditionList() { return (m_ConditionList); }
 		/**
 			Convenience function for getting a single value
+			@return Condition
 		*/
-		public Condition getFirstCondition() 
+		public Condition getCondition() 
 			{
 			if (m_ConditionList.size() == 0)
 				return (null);
@@ -501,6 +377,7 @@ public class SlickXMLParser extends DefaultHandler
 		protected void endElement(String uri, String localName, String qName)
 				throws SAXException
 			{
+
 			if ((localName.equals("condition")) && ((--m_ConditionRef) == 0))
 				{
 				m_Condition = null;
@@ -514,16 +391,45 @@ public class SlickXMLParser extends DefaultHandler
 		}
 
 	//========================================================================
-	public class Header
+	public class Property
 		{
 		private boolean _firstCall = true;
 		
-		private String m_Package;
-		private String m_Destination;
+		private String m_Name;
+		private StringBuilder m_Attribute;
 
-		public String getPackage() { return (m_Package); }
-		public String getDestination() { return (m_Destination); }
+		private List<String> m_AttributeList = new ArrayList<String>();
 
+		private List<Element> m_ElementList = new ArrayList<Element>();
+		private Element m_Element;
+		private int m_ElementRef = 0;
+
+		public String getName() { return (m_Name); }
+
+		public String getAttribute()
+			{
+			return (m_AttributeList.size() == 0 ? null : m_AttributeList.get(0));
+			}
+			
+		public List<String> getAttributeList()
+			{
+			return (m_AttributeList);
+			}
+
+
+		public List<Element> getElementList() { return (m_ElementList); }
+		/**
+			Convenience function for getting a single value
+			@return Element
+		*/
+		public Element getElement() 
+			{
+			if (m_ElementList.size() == 0)
+				return (null);
+			else
+				return (m_ElementList.get(0));
+			}
+			
 
 
 		//------------------------------------------------------------------------
@@ -531,21 +437,143 @@ public class SlickXMLParser extends DefaultHandler
 			{
 			if (_firstCall)
 				{
-				m_Package = attrs.getValue("package");
-				m_Destination = attrs.getValue("destination");
+				m_Name = attrs.getValue("name");
 
 				_firstCall = false;
 				return;
 				}
 				
+			if (m_Element != null) 
+				{
+				if (localName.equals("element"))
+					m_ElementRef ++;
+					
+				m_Element.startElement(uri, localName, qName, attrs);
+				return;
+				}
+				
+
+
+			if (localName.equals("attribute") )
+				{
+				m_Attribute = new StringBuilder();
+				_characterGrabber = m_Attribute;
+				}
 
 				
+			if (localName.equals("element"))
+				{
+				m_Element = new Element();
+				m_ElementList.add(m_Element);
+				m_ElementRef = 1;
+				
+				m_Element.startElement(uri, localName, qName, attrs);
+				}
+
+
 			}
 
 		//------------------------------------------------------------------------
 		protected void endElement(String uri, String localName, String qName)
 				throws SAXException
 			{
+			if (m_Attribute != null)
+				{
+				m_AttributeList.add(m_Attribute.toString());
+				m_Attribute = null;
+				}
+				
+
+			if ((localName.equals("element")) && ((--m_ElementRef) == 0))
+				{
+				m_Element = null;
+				}
+					
+			if (m_Element != null)
+				m_Element.endElement(uri, localName, qName);
+
+
+			}
+		}
+
+	//========================================================================
+	public class Parser
+		{
+		private boolean _firstCall = true;
+		
+		private String m_Name;
+
+		private List<DataObject> m_DataObjectList = new ArrayList<DataObject>();
+		private DataObject m_DataObject;
+		private int m_DataObjectRef = 0;
+
+		public String getName() { return (m_Name); }
+
+
+		public List<DataObject> getDataObjectList() { return (m_DataObjectList); }
+		/**
+			Convenience function for getting a single value
+			@return DataObject
+		*/
+		public DataObject getDataObject() 
+			{
+			if (m_DataObjectList.size() == 0)
+				return (null);
+			else
+				return (m_DataObjectList.get(0));
+			}
+			
+
+
+		//------------------------------------------------------------------------
+		protected void startElement(String uri, String localName, String qName, Attributes attrs)
+			{
+			if (_firstCall)
+				{
+				m_Name = attrs.getValue("name");
+
+				_firstCall = false;
+				return;
+				}
+				
+			if (m_DataObject != null) 
+				{
+				if (localName.equals("object"))
+					m_DataObjectRef ++;
+					
+				m_DataObject.startElement(uri, localName, qName, attrs);
+				return;
+				}
+				
+
+
+				
+			if (localName.equals("object"))
+				{
+				m_DataObject = new DataObject();
+				m_DataObjectList.add(m_DataObject);
+				m_DataObjectRef = 1;
+				
+				m_DataObject.startElement(uri, localName, qName, attrs);
+				}
+
+
+			}
+
+		//------------------------------------------------------------------------
+		protected void endElement(String uri, String localName, String qName)
+				throws SAXException
+			{
+
+			if ((localName.equals("object")) && ((--m_DataObjectRef) == 0))
+				{
+				m_DataObject = null;
+				}
+					
+			if (m_DataObject != null)
+				m_DataObject.endElement(uri, localName, qName);
+
+
 			}
 		}
 

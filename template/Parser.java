@@ -38,6 +38,7 @@ public List\<String\> get<prop.name>List()
 	<obj.objects:{subobj | public List\<<subobj.className>\> get<subobj.className>List() { return (m_<subobj.varName>List); }
 /**
 	Convenience function for getting a single value
+	@return <subobj.className>
 */
 public <subobj.className> get<subobj.className>() 
 	{
