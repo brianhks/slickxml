@@ -15,7 +15,7 @@ print("===============================================");
 
 
 jp = new JavaProgram().setProgramName("slickxml")
-		.setSourceDirectory("src").setup();
+		.setSourceDirectory("src/main/java").setup();
 
 ivyConfig = "runtime";
 ivy = new IvyAddon().addSettingsFile("ivysettings.xml").setup();
@@ -37,6 +37,19 @@ jp.getJarRule()
 		.addFiles(new RegExFileSet("template", ".*").getFullFilePaths());
 		
 	
+//-------------------------------------------------------------------
+//==-- Generate parser file --==
+new SimpleRule("generate-parser").setMakeAction("doGenerate").setDescription("Generate SlickXMLParser.java")
+		.addDepend(jp.getJarRule())
+		.alwaysRun();
+		
+void doGenerate(Rule rule)
+	{
+	classpath.addPath(".");
+	classpath.addPaths(resolveRule.getClasspath("runtime"));
+	saw.exec("java -cp "+classpath+" org.agileclick.slickxml.SlickParser src/main/conf/slick_parser.xml");
+	}
+
 //-------------------------------------------------------------------
 //==-- TEST --==
 testRule = new SimpleRule("test").setMakeAction("doTest").setDescription("Run simple test")
