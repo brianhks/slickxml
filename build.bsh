@@ -20,10 +20,14 @@ jp = new JavaProgram().setProgramName("slickxml")
 ivyConfig = "runtime";
 ivy = new IvyAddon().addSettingsFile("ivysettings.xml").setup();
 resolveRule = ivy.getResolveRule(ivyConfig);
-		
-jp.getCompileRule().addDepend(resolveRule);
 
-classpath = jp.getCompileRule().getClasspath();
+jc = jp.getCompileRule();
+jc.addDepend(resolveRule);
+
+jc.getDefinition().set("source", "11");
+jc.getDefinition().set("target", "11");
+
+classpath = jc.getClasspath();
 
 pomRule = ivy.createPomRule("build/jar/pom.xml", resolveRule)
 		.addDepend(jp.getJarRule())
@@ -113,6 +117,7 @@ void signArtifacts(Rule rule)
 	
 new JarRule("maven-bundle", "build/bundle.jar").setDescription("Create bundle for uploading to maven central")
 		.addDepend(mavenArtifactsRule)
+		.includeManifest(false)
 		.addFileSet(new RegExFileSet(saw.getProperty(JavaProgram.JAR_DIRECTORY_PROPERTY), ".*"));
 	
 
