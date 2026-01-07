@@ -8,6 +8,7 @@ public class Property
 	private String m_name;
 	private boolean m_isAttribute;
 	private String m_attributeName;
+	private boolean m_isGrabBody;
 	
 	private String m_elementName;
 	private List<Condition> m_conditions;
@@ -17,6 +18,11 @@ public class Property
 		m_name = name;
 		m_conditions = new ArrayList<Condition>();
 		}
+
+	public boolean isGrabBody() { return m_isGrabBody; }
+	public void setGrabBody() { m_isGrabBody = true; }
+
+	public boolean isElement() { return !isGrabBody() && !isAttribute(); }
 	
 	public boolean isAttribute() { return (m_attributeName != null); }
 	public String getName() { return (m_name); }

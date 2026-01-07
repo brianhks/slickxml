@@ -35,13 +35,16 @@ YourSlickParser - this is the SlickXml parser that was generated
 slickHandler - your handler for receiving the slick objects
 
 ```java 
-XMLReader xmlParser = XMLReaderFactory.createXMLReader(); 
 YourSlickParser genHandler = new YourSlickParser(slickHandler); 
-xmlParser.setContentHandler(genHandler);
 
-InputSource source = new InputSource(new FileInputStream(xmlFile)); 
-xmlParser.parse(source);
+SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+saxParserFactory.setValidating(false);
+SAXParser saxParser = saxParserFactory.newSAXParser();
+saxParser.parse(new File(xmlSource), genHandler);
 ```
+
+The generated slick parser works as a sax handler for the sax parser events.
+As the slick parser gathers objects it passes them to the handler you gave it in the constructor.
 
 
 ## Config File
@@ -98,6 +101,10 @@ The object it will return is Book or more precisely it will be an instance of `B
 in the package `bookprocessor.parsers`. Notice we didn't have to specify the root element. 
 The parser basically goes through the file ignoring everything until it hits an 
 element that matches one of its root objects, in this case book.
+
+If you would like this object to implement an interface you can add the `implements` attribute, 
+make sure to use the fully qualified interface name.  This works well if you have 
+two similar objects with some different attributes and want to treat them the same.
 
 #### Property
 Now to define two properties on the object to contain each of the attributes 

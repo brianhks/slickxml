@@ -35,6 +35,12 @@ import org.xml.sax.helpers.DefaultHandler;
 					<property name="Name">
 						<attribute>name</attribute>
 					</property>
+					<property name="BodyProperty">
+						<attribute>body</attribute>
+					</property>
+					<property name="Implements">
+						<attribute>implements</attribute>
+					</property>
 					<property name="Reference">
 						<attribute>reference</attribute>
 					</property>
@@ -107,7 +113,7 @@ public class SlickXMLParser extends DefaultHandler
 		
 
 	//========================================================================
-	public class Condition
+	public class Condition 
 		{
 		private boolean _firstCall = true;
 		
@@ -144,12 +150,14 @@ public class SlickXMLParser extends DefaultHandler
 		}
 
 	//========================================================================
-	public class DataObject
+	public class DataObject 
 		{
 		private boolean _firstCall = true;
 		
 		private String m_Tag;
 		private String m_Name;
+		private String m_BodyProperty;
+		private String m_Implements;
 		private String m_Reference;
 
 		private List<Property> m_PropertyList = new ArrayList<Property>();
@@ -161,6 +169,8 @@ public class SlickXMLParser extends DefaultHandler
 
 		public String getTag() { return (m_Tag); }
 		public String getName() { return (m_Name); }
+		public String getBodyProperty() { return (m_BodyProperty); }
+		public String getImplements() { return (m_Implements); }
 		public String getReference() { return (m_Reference); }
 
 
@@ -199,6 +209,8 @@ public class SlickXMLParser extends DefaultHandler
 				{
 				m_Tag = attrs.getValue("tag");
 				m_Name = attrs.getValue("name");
+				m_BodyProperty = attrs.getValue("body");
+				m_Implements = attrs.getValue("implements");
 				m_Reference = attrs.getValue("reference");
 
 				_firstCall = false;
@@ -207,7 +219,7 @@ public class SlickXMLParser extends DefaultHandler
 				
 			if (m_Property != null) 
 				{
-				if (localName.equals("property"))
+				if (qName.equals("property"))
 					m_PropertyRef ++;
 					
 				m_Property.startElement(uri, localName, qName, attrs);
@@ -216,7 +228,7 @@ public class SlickXMLParser extends DefaultHandler
 				
 			if (m_DataObject != null) 
 				{
-				if (localName.equals("object"))
+				if (qName.equals("object"))
 					m_DataObjectRef ++;
 					
 				m_DataObject.startElement(uri, localName, qName, attrs);
@@ -226,7 +238,7 @@ public class SlickXMLParser extends DefaultHandler
 
 
 				
-			if (localName.equals("property"))
+			if (qName.equals("property"))
 				{
 				m_Property = new Property();
 				m_PropertyList.add(m_Property);
@@ -235,7 +247,7 @@ public class SlickXMLParser extends DefaultHandler
 				m_Property.startElement(uri, localName, qName, attrs);
 				}
 
-			if (localName.equals("object"))
+			if (qName.equals("object"))
 				{
 				m_DataObject = new DataObject();
 				m_DataObjectList.add(m_DataObject);
@@ -252,28 +264,28 @@ public class SlickXMLParser extends DefaultHandler
 				throws SAXException
 			{
 
-			if ((localName.equals("property")) && ((--m_PropertyRef) == 0))
-				{
-				m_Property = null;
-				}
-					
 			if (m_Property != null)
 				m_Property.endElement(uri, localName, qName);
 
-			if ((localName.equals("object")) && ((--m_DataObjectRef) == 0))
+			if ((qName.equals("property")) && ((--m_PropertyRef) == 0))
+				{
+				m_Property = null;
+				}
+
+			if (m_DataObject != null)
+				m_DataObject.endElement(uri, localName, qName);
+
+			if ((qName.equals("object")) && ((--m_DataObjectRef) == 0))
 				{
 				m_DataObject = null;
 				}
-					
-			if (m_DataObject != null)
-				m_DataObject.endElement(uri, localName, qName);
 
 
 			}
 		}
 
 	//========================================================================
-	public class Header
+	public class Header 
 		{
 		private boolean _firstCall = true;
 		
@@ -310,7 +322,7 @@ public class SlickXMLParser extends DefaultHandler
 		}
 
 	//========================================================================
-	public class Element
+	public class Element 
 		{
 		private boolean _firstCall = true;
 		
@@ -351,7 +363,7 @@ public class SlickXMLParser extends DefaultHandler
 				
 			if (m_Condition != null) 
 				{
-				if (localName.equals("condition"))
+				if (qName.equals("condition"))
 					m_ConditionRef ++;
 					
 				m_Condition.startElement(uri, localName, qName, attrs);
@@ -361,7 +373,7 @@ public class SlickXMLParser extends DefaultHandler
 
 
 				
-			if (localName.equals("condition"))
+			if (qName.equals("condition"))
 				{
 				m_Condition = new Condition();
 				m_ConditionList.add(m_Condition);
@@ -378,20 +390,20 @@ public class SlickXMLParser extends DefaultHandler
 				throws SAXException
 			{
 
-			if ((localName.equals("condition")) && ((--m_ConditionRef) == 0))
+			if (m_Condition != null)
+				m_Condition.endElement(uri, localName, qName);
+
+			if ((qName.equals("condition")) && ((--m_ConditionRef) == 0))
 				{
 				m_Condition = null;
 				}
-					
-			if (m_Condition != null)
-				m_Condition.endElement(uri, localName, qName);
 
 
 			}
 		}
 
 	//========================================================================
-	public class Property
+	public class Property 
 		{
 		private boolean _firstCall = true;
 		
@@ -445,7 +457,7 @@ public class SlickXMLParser extends DefaultHandler
 				
 			if (m_Element != null) 
 				{
-				if (localName.equals("element"))
+				if (qName.equals("element"))
 					m_ElementRef ++;
 					
 				m_Element.startElement(uri, localName, qName, attrs);
@@ -454,14 +466,14 @@ public class SlickXMLParser extends DefaultHandler
 				
 
 
-			if (localName.equals("attribute") )
+			if (qName.equals("attribute") )
 				{
 				m_Attribute = new StringBuilder();
 				_characterGrabber = m_Attribute;
 				}
 
 				
-			if (localName.equals("element"))
+			if (qName.equals("element"))
 				{
 				m_Element = new Element();
 				m_ElementList.add(m_Element);
@@ -484,20 +496,20 @@ public class SlickXMLParser extends DefaultHandler
 				}
 				
 
-			if ((localName.equals("element")) && ((--m_ElementRef) == 0))
+			if (m_Element != null)
+				m_Element.endElement(uri, localName, qName);
+
+			if ((qName.equals("element")) && ((--m_ElementRef) == 0))
 				{
 				m_Element = null;
 				}
-					
-			if (m_Element != null)
-				m_Element.endElement(uri, localName, qName);
 
 
 			}
 		}
 
 	//========================================================================
-	public class Parser
+	public class Parser 
 		{
 		private boolean _firstCall = true;
 		
@@ -538,7 +550,7 @@ public class SlickXMLParser extends DefaultHandler
 				
 			if (m_DataObject != null) 
 				{
-				if (localName.equals("object"))
+				if (qName.equals("object"))
 					m_DataObjectRef ++;
 					
 				m_DataObject.startElement(uri, localName, qName, attrs);
@@ -548,7 +560,7 @@ public class SlickXMLParser extends DefaultHandler
 
 
 				
-			if (localName.equals("object"))
+			if (qName.equals("object"))
 				{
 				m_DataObject = new DataObject();
 				m_DataObjectList.add(m_DataObject);
@@ -565,13 +577,13 @@ public class SlickXMLParser extends DefaultHandler
 				throws SAXException
 			{
 
-			if ((localName.equals("object")) && ((--m_DataObjectRef) == 0))
+			if (m_DataObject != null)
+				m_DataObject.endElement(uri, localName, qName);
+
+			if ((qName.equals("object")) && ((--m_DataObjectRef) == 0))
 				{
 				m_DataObject = null;
 				}
-					
-			if (m_DataObject != null)
-				m_DataObject.endElement(uri, localName, qName);
 
 
 			}
@@ -591,7 +603,7 @@ public class SlickXMLParser extends DefaultHandler
 	public void startElement(String uri, String localName, String qName, Attributes attrs)
 			throws SAXException
 		{
-		if (localName.equals("slickxml"))
+		if (qName.equals("slickxml"))
 			{
 			Header subObject = new Header();
 			subObject.startElement(uri, localName, qName, attrs);
@@ -606,7 +618,7 @@ public class SlickXMLParser extends DefaultHandler
 				}
 			}
 
-		if (localName.equals("parser"))
+		if (qName.equals("parser"))
 			{
 			//This handles recursive nodes
 			if (m_Parser != null)
@@ -634,7 +646,7 @@ public class SlickXMLParser extends DefaultHandler
 		//Stop grabbing characters for any node.
 		_characterGrabber = null;
 		
-		if ((localName.equals("parser")) && ((--m_ParserRef) == 0))
+		if ((qName.equals("parser")) && ((--m_ParserRef) == 0))
 			{
 			try
 				{

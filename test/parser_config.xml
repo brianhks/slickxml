@@ -10,7 +10,7 @@ destination: tells where to write the java files
 	<parser name="TBXParser">
 		<!-- We are looking for a tag named termEntry 
 		Each <object> tag becomes an inner class defined within the parser -->
-		<object tag="termEntry" name="TermEntry">
+		<object tag="termEntry" name="TermEntry" body="Body">
 		
 			<!-- The property tag is used to define a property on the returned 
 			object.  In this case we are defining the Subject property and it 
@@ -83,6 +83,9 @@ destination: tells where to write the java files
 				</property>
 				<property name="Name">
 					<attribute>name</attribute>
+				</property>
+				<property name="BodyProperty">
+					<attribute>body</attribute>
 				</property>
 				<property name="Reference">
 					<attribute>reference</attribute>

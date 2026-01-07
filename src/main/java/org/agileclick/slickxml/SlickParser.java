@@ -179,13 +179,28 @@ public class SlickParser implements SlickXMLParser.SlickHandler
 			
 			myDo.addProperty(myProperty);
 			}
+
+		if (myDo.getBodyProperty() != null)
+			{
+			Property bodyProperty = new Property(myDo.getBodyProperty());
+
+			bodyProperty.setGrabBody();
+
+			myDo.addProperty(bodyProperty);
+			}
 			
 		for (SlickXMLParser.DataObject dObj : objects)
 			{
 			if (dObj.getReference() == null)
 				{
 				DataObject subDo = new DataObject(dObj.getTag(), dObj.getName());
-						
+
+				if (dObj.getImplements() != null)
+					subDo.setImplements(dObj.getImplements());
+
+				if (dObj.getBodyProperty() != null)
+					subDo.setBodyProperty(dObj.getBodyProperty());
+
 				myDo.addObject(subDo);
 				
 				m_allObjects.put(subDo.getClassName(), subDo);

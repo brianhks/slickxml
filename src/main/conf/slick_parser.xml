@@ -21,6 +21,12 @@
 				<property name="Name">
 					<attribute>name</attribute>
 				</property>
+				<property name="BodyProperty">
+					<attribute>body</attribute>
+				</property>
+				<property name="Implements">
+					<attribute>implements</attribute>
+				</property>
 				<property name="Reference">
 					<attribute>reference</attribute>
 				</property>

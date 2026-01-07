@@ -4,7 +4,7 @@ group slick_parser_templates;
 innerClass(obj) ::=<<
 
 //========================================================================
-public class <obj.className>
+public class <obj.className> <if (obj.implements)>implements <obj.implements><endif>
 	{
 	private boolean _firstCall = true;
 	
@@ -60,6 +60,11 @@ public <subobj.className> get<subobj.className>()
 m_<prop.varName> = attrs.getValue("<prop.attrName>");
 
 <endif>
+<if (prop.grabBody)>
+m_<prop.varName> = new StringBuilder();
+_characterGrabber = m_<prop.varName>;
+
+<endif>
 }>
 			_firstCall = false;
 			return;
@@ -68,7 +73,7 @@ m_<prop.varName> = attrs.getValue("<prop.attrName>");
 		<obj.objects:{sobj |
 if (m_<sobj.varName> != null) 
 	{
-	if (localName.equals("<sobj.tag>"))
+	if (qName.equals("<sobj.tag>"))
 		m_<sobj.varName>Ref ++;
 		
 	m_<sobj.varName>.startElement(uri, localName, qName, attrs);
@@ -78,8 +83,8 @@ if (m_<sobj.varName> != null)
 }>
 
 		<obj.properties:{prop |
-<if (!prop.attribute)>
-if (localName.equals("<prop.elementName>") <if (prop.conditional)>&& 
+<if (prop.element)>
+if (qName.equals("<prop.elementName>") <if (prop.conditional)>&&
 		<prop.conditions:{cond | attrs.getValue("<cond.attrName>").equals("<cond.attrValue>")}; separator=" && "><endif>)
 	{
 	m_<prop.varName> = new StringBuilder();
@@ -90,7 +95,7 @@ if (localName.equals("<prop.elementName>") <if (prop.conditional)>&&
 }>
 			
 		<obj.objects:{sobj |
-if (localName.equals("<sobj.tag>"))
+if (qName.equals("<sobj.tag>"))
 	{
 	m_<sobj.varName> = new <sobj.className>();
 	m_<sobj.varName>List.add(m_<sobj.varName>);
@@ -118,13 +123,13 @@ if (m_<prop.varName> != null)
 }>
 
 		<obj.objects:{sobj |
-if ((localName.equals("<sobj.tag>")) && ((--m_<sobj.varName>Ref) == 0))
+if (m_<sobj.varName> != null)
+	m_<sobj.varName>.endElement(uri, localName, qName);
+
+if ((qName.equals("<sobj.tag>")) && ((--m_<sobj.varName>Ref) == 0))
 	{
 	m_<sobj.varName> = null;
 	}
-		
-if (m_<sobj.varName> != null)
-	m_<sobj.varName>.endElement(uri, localName, qName);
 
 }>
 		}
@@ -202,7 +207,7 @@ private int m_<obj.varName>Ref = 0;
 		{
 		<parser.objects:{obj |
 <if (obj.attributesOnly)>
-if (localName.equals("<obj.tag>"))
+if (qName.equals("<obj.tag>"))
 	{
 	<obj.className> subObject = new <obj.className>();
 	subObject.startElement(uri, localName, qName, attrs);
@@ -219,7 +224,7 @@ if (localName.equals("<obj.tag>"))
 
 
 <else>
-if (localName.equals("<obj.tag>"))
+if (qName.equals("<obj.tag>"))
 	{
 	//This handles recursive nodes
 	if (m_<obj.varName> != null)
@@ -251,7 +256,7 @@ if (m_<obj.varName> != null)
 		
 		<parser.objects:{obj |
 <if (!obj.attributesOnly)>
-if ((localName.equals("<obj.tag>")) && ((--m_<obj.varName>Ref) == 0))
+if ((qName.equals("<obj.tag>")) && ((--m_<obj.varName>Ref) == 0))
 	{
 	try
 		{
